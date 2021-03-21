@@ -20,7 +20,7 @@ class Transparency(QDialog):
     def setupUI(self):
         self.setGeometry(1100, 200, 300, 100)
         self.setWindowTitle("윈도우 투명도")
-        # self.setWindowIcon(QIcon('icon.png'))
+        self.setWindowIcon(QIcon('icon.png'))
 
         target_label = QLabel("적용대상 : ")
         target_name = QLabel(self.wintitle)
@@ -63,7 +63,10 @@ def windows_transparency():
 
 
 def always_on_top():
-    print("윈도우 항상위")
+    handle = win32gui.GetForegroundWindow()
+
+    # win32gui.SetWindowPos(핸들, 옵션, x, y, ox, oy, flag)
+    win32gui.SetWindowPos(handle, win32con.HWND_TOPMOST, 0, 0, 0, 0, win32con.SWP_NOMOVE | win32con.SWP_NOSIZE)
 
 
 class GetKeyInput(QThread):
@@ -71,7 +74,7 @@ class GetKeyInput(QThread):
     keyStore = set()
     HOT_KEYS = {
         "windows_transparency": set([Key.ctrl_l, Key.alt_l, Key.f1])
-        , "windows_transparency1": set([KeyCode(char="q")])
+        , "always_on_top": set([Key.ctrl_l, Key.alt_l, Key.f2])
     }
 
     def __init__(self, parent):
@@ -109,15 +112,20 @@ class MainWindow(QMainWindow):
 
         grid_layout = QGridLayout(self)  # Create a QGridLayout
         central_widget.setLayout(grid_layout)  # Set the layout into the central widget
-        grid_layout.addWidget(QLabel("ctrl + alt + F1 = 화면 투명도", self), 0, 0)
-        git_label = QLabel('<a href="https://github.com/jo94kr/windowsController">Made By Jo</a>')
-        git_label.setOpenExternalLinks(True)
-        grid_layout.addWidget(git_label, 3, 3)
+
+        transparency_label = QLabel("ctrl + alt + F1 = 화면 투명도")
+        alwaysOnTop_label = QLabel("ctrl + alt + F2 = 화면 최상위")
+        grid_layout.addWidget(transparency_label, 0, 0)
+        grid_layout.addWidget(alwaysOnTop_label, 1, 0)
 
         # Add a checkbox, which will depend on the behavior of the program when the window is closed
         self.check_box = QCheckBox('트레이에 숨기기')
         grid_layout.addWidget(self.check_box, 2, 0)
         grid_layout.addItem(QSpacerItem(0, 0, QSizePolicy.Expanding, QSizePolicy.Expanding), 2, 0)
+
+        git_label = QLabel('<a href="https://github.com/jo94kr/windowsController">Made By Jo</a>')
+        git_label.setOpenExternalLinks(True)
+        grid_layout.addWidget(git_label, 3, 3)
 
         # Init QSystemTrayIcon
         self.tray_icon = QSystemTrayIcon(self)
