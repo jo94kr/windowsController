@@ -69,12 +69,20 @@ def always_on_top():
     win32gui.SetWindowPos(handle, win32con.HWND_TOPMOST, 0, 0, 0, 0, win32con.SWP_NOMOVE | win32con.SWP_NOSIZE)
 
 
+def always_on_top_off():
+    handle = win32gui.GetForegroundWindow()
+
+    # win32gui.SetWindowPos(핸들, 옵션, x, y, ox, oy, flag)
+    win32gui.SetWindowPos(handle, win32con.HWND_NOTOPMOST, 0, 0, 0, 0, win32con.SWP_NOMOVE | win32con.SWP_NOSIZE)
+
+
 class GetKeyInput(QThread):
     keySign = pyqtSignal(object)
     keyStore = set()
     HOT_KEYS = {
         "windows_transparency": set([Key.ctrl_l, Key.alt_l, Key.f1])
         , "always_on_top": set([Key.ctrl_l, Key.alt_l, Key.f2])
+        , "always_on_top_off": set([Key.ctrl_l, Key.alt_l, Key.f3])
     }
 
     def __init__(self, parent):
@@ -115,13 +123,15 @@ class MainWindow(QMainWindow):
 
         transparency_label = QLabel("ctrl + alt + F1 = 화면 투명도")
         alwaysOnTop_label = QLabel("ctrl + alt + F2 = 화면 최상위")
+        alwaysOnTopOff_label = QLabel("ctrl + alt + F3 = 화면 최상위 해제")
         grid_layout.addWidget(transparency_label, 0, 0)
         grid_layout.addWidget(alwaysOnTop_label, 1, 0)
+        grid_layout.addWidget(alwaysOnTopOff_label, 2, 0)
 
         # Add a checkbox, which will depend on the behavior of the program when the window is closed
         self.check_box = QCheckBox('트레이에 숨기기')
-        grid_layout.addWidget(self.check_box, 2, 0)
-        grid_layout.addItem(QSpacerItem(0, 0, QSizePolicy.Expanding, QSizePolicy.Expanding), 2, 0)
+        grid_layout.addWidget(self.check_box, 3, 0)
+        grid_layout.addItem(QSpacerItem(0, 0, QSizePolicy.Expanding, QSizePolicy.Expanding), 3, 1)
 
         git_label = QLabel('<a href="https://github.com/jo94kr/windowsController">Made By Jo</a>')
         git_label.setOpenExternalLinks(True)
